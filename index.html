@@ -7,26 +7,25 @@
   <style>
     body {
       font-family: 'Noto Sans Devanagari', sans-serif;
+      background-color: #f2f2f2;
       padding: 20px;
-      background-color: #f9f9f9;
     }
     table {
-      border-collapse: collapse;
       width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
       margin-top: 20px;
-      background-color: white;
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
+      border: 1px solid #ddd;
+      padding: 8px;
       vertical-align: top;
     }
     th {
-      background-color: #e3e3e3;
+      background-color: #e0e0e0;
     }
-    h2 {
-      color: #333;
+    img {
+      max-width: 100px;
     }
   </style>
 </head>
@@ -38,46 +37,52 @@
   </table>
 
   <script>
-    const sheetURL = 'https://script.google.com/macros/s/AKfycbyXuM7Y2NTwnLU6j6LK48XkSi3X3zo2HMYF-2KguneVL_t_TgYQcskKy-Ly48oAWjNYMw/exec';
+    const sheetURL = https://script.google.com/macros/s/AKfycbyXuM7Y2NTwnLU6j6LK48XkSi3X3zo2HMYF-2KguneVL_t_TgYQcskKy-Ly48oAWjNYMw/exec'👉 यहाँ Web App URL डालें';
 
     fetch(sheetURL)
-      .then(res => {
-        if (!res.ok) throw new Error('Network response was not OK');
-        return res.json();
+      .then(response => {
+        if (!response.ok) throw new Error("नेटवर्क प्रतिक्रिया असफल");
+        return response.json();
       })
       .then(data => {
         const thead = document.getElementById('thead');
         const tbody = document.getElementById('tbody');
 
-        if (data.length > 0) {
-          // Table Headers
-          let headerRow = '<tr>';
-          Object.keys(data[0]).forEach(key => {
-            headerRow += `<th>${key}</th>`;
-          });
-          headerRow += '</tr>';
-          thead.innerHTML = headerRow;
-
-          // Table Rows
-          data.forEach(row => {
-            let rowHTML = '<tr>';
-            Object.values(row).forEach(val => {
-              if (typeof val === 'string' && val.startsWith('http') && (val.includes('.jpg') || val.includes('.png'))) {
-                rowHTML += `<td><img src="${val}" alt="फोटो" width="100"/></td>`;
-              } else {
-                rowHTML += `<td>${val}</td>`;
-              }
-            });
-            rowHTML += '</tr>';
-            tbody.innerHTML += rowHTML;
-          });
-        } else {
-          tbody.innerHTML = '<tr><td colspan="10">कोई डेटा नहीं मिला</td></tr>';
+        if (data.error) {
+          tbody.innerHTML = `<tr><td colspan="20">त्रुटि: ${data.error}</td></tr>`;
+          return;
         }
+
+        if (data.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='20'>कोई डेटा नहीं मिला</td></tr>";
+          return;
+        }
+
+        // Headers
+        let headerRow = '<tr>';
+        Object.keys(data[0]).forEach(key => {
+          headerRow += `<th>${key}</th>`;
+        });
+        headerRow += '</tr>';
+        thead.innerHTML = headerRow;
+
+        // Rows
+        data.forEach(row => {
+          let rowHTML = '<tr>';
+          Object.values(row).forEach(val => {
+            if (typeof val === 'string' && val.startsWith('http') && (val.includes('.jpg') || val.includes('.png'))) {
+              rowHTML += `<td><img src="${val}" alt="फ़ोटो"></td>`;
+            } else {
+              rowHTML += `<td>${val}</td>`;
+            }
+          });
+          rowHTML += '</tr>';
+          tbody.innerHTML += rowHTML;
+        });
       })
-      .catch(err => {
-        document.getElementById('responseTable').innerHTML = '<tr><td colspan="10">डेटा लोड नहीं हो सका</td></tr>';
-        console.error('त्रुटि:', err);
+      .catch(error => {
+        document.getElementById('responseTable').innerHTML = `<tr><td colspan="20">डेटा लोड नहीं हो सका: ${error.message}</td></tr>`;
+        console.error('Fetch Error:', error);
       });
   </script>
 </body>
