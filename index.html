@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Noto Sans Devanagari', sans-serif;
-      background-color: #f2f2f2;
+      background-color: #f9f9f9;
       padding: 20px;
     }
     table {
@@ -17,15 +17,14 @@
       margin-top: 20px;
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      vertical-align: top;
+      border: 1px solid #ccc;
+      padding: 10px;
     }
     th {
       background-color: #e0e0e0;
     }
     img {
-      max-width: 100px;
+      max-width: 120px;
     }
   </style>
 </head>
@@ -37,8 +36,7 @@
   </table>
 
   <script>
-   const sheetURL = 'https://script.google.com/macros/s/AKfycbyXuM7Y2NTwnLU6j6LK48XkSi3X3zo2HMYF-2KguneVL_t_TgYQcskKy-Ly48oAWjNYMw/exec';
-
+    const sheetURL = 'https://script.google.com/macros/s/AKfycbyXuM7Y2NTwnLU6j6LK48XkSi3X3zo2HMYF-2KguneVL_t_TgYQcskKy-Ly48oAWjNYMw/exec'; // Important
 
     fetch(sheetURL)
       .then(response => {
@@ -60,29 +58,23 @@
         }
 
         // Headers
-        let headerRow = '<tr>';
-        Object.keys(data[0]).forEach(key => {
-          headerRow += `<th>${key}</th>`;
-        });
-        headerRow += '</tr>';
+        const headerRow = '<tr>' + Object.keys(data[0]).map(key => `<th>${key}</th>`).join('') + '</tr>';
         thead.innerHTML = headerRow;
 
         // Rows
         data.forEach(row => {
-          let rowHTML = '<tr>';
-          Object.values(row).forEach(val => {
+          const rowHTML = '<tr>' + Object.values(row).map(val => {
             if (typeof val === 'string' && val.startsWith('http') && (val.includes('.jpg') || val.includes('.png'))) {
-              rowHTML += `<td><img src="${val}" alt="फ़ोटो"></td>`;
+              return `<td><img src="${val}" alt="फ़ोटो"></td>`;
             } else {
-              rowHTML += `<td>${val}</td>`;
+              return `<td>${val}</td>`;
             }
-          });
-          rowHTML += '</tr>';
+          }).join('') + '</tr>';
           tbody.innerHTML += rowHTML;
         });
       })
       .catch(error => {
-        document.getElementById('responseTable').innerHTML = `<tr><td colspan="20">डेटा लोड नहीं हो सका: ${error.message}</td></tr>`;
+        document.getElementById('tbody').innerHTML = `<tr><td colspan="20">डेटा लोड नहीं हो सका: ${error.message}</td></tr>`;
         console.error('Fetch Error:', error);
       });
   </script>
